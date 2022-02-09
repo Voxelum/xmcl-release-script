@@ -1,0 +1,18 @@
+{
+	"name": "xmcl-release-script",
+	"version": "0.0.1",
+	"bin": "bin/index.js",
+	"scripts": {
+		"build": "esbuild --bundle --outdir=bin --format=cjs --platform=node --minify index.ts",
+		"start": "esno index.ts"
+	},
+	"dependencies": {
+		"@octokit/rest": "^18.12.0",
+		"@types/node": "^17.0.16",
+		"esbuild": "^0.14.21",
+		"esno": "^0.14.1",
+		"https-proxy-agent": "^5.0.0",
+		"node-fetch": "^2.6.7",
+		"typescript": "^4.5.5"
+	}
+}
