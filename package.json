@@ -6,7 +6,7 @@
 		"build": "esbuild --bundle --outdir=bin --format=cjs --platform=node --minify index.ts",
 		"start": "esno index.ts"
 	},
-	"dependencies": {
+	"devDependencies": {
 		"@octokit/rest": "^18.12.0",
 		"@types/node": "^17.0.16",
 		"esbuild": "^0.14.21",
