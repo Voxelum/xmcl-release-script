@@ -72,15 +72,15 @@ async function main(releaseId: number, assetId: number) {
     }
 
     // delete existed asset
-    console.log(`Start to delete the old asset!`)
-    await api.repos.deleteReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', asset_id: assetId })
-    console.log(`Delete the asset ${assetId} success!`)
+    // console.log(`Start to delete the old asset!`)
+    // await api.repos.deleteReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', asset_id: assetId })
+    // console.log(`Delete the asset ${assetId} success!`)
 
     const signedAppxContent = readFileSync(appxFilePath)
     // upload the new one
     console.log(`Start to upload the signed asset!`)
     const uploadStart = Date.now()
-    const uploadResult = await api.repos.uploadReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', release_id: releaseId, name: assetName, data: signedAppxContent as any })
+    const uploadResult = await api.repos.uploadReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', release_id: releaseId, name: assetName.replace('-unsigned', '').replace('-x64', ''), data: signedAppxContent as any })
     console.log(`Upload the asset succeed! ${uploadResult.data.id}. Took ${(Date.now() - uploadStart) / 1000}s`)
 
     console.log(uploadResult.data)

@@ -5183,13 +5183,10 @@ async function main(releaseId, assetId) {
       console.log(line.toString());
     }
   }
-  console.log(`Start to delete the old asset!`);
-  await api.repos.deleteReleaseAsset({ owner: "voxelum", repo: "x-minecraft-launcher", asset_id: assetId });
-  console.log(`Delete the asset ${assetId} success!`);
   const signedAppxContent = (0, import_fs.readFileSync)(appxFilePath);
   console.log(`Start to upload the signed asset!`);
   const uploadStart = Date.now();
-  const uploadResult = await api.repos.uploadReleaseAsset({ owner: "voxelum", repo: "x-minecraft-launcher", release_id: releaseId, name: assetName, data: signedAppxContent });
+  const uploadResult = await api.repos.uploadReleaseAsset({ owner: "voxelum", repo: "x-minecraft-launcher", release_id: releaseId, name: assetName.replace("-unsigned", "").replace("-x64", ""), data: signedAppxContent });
   console.log(`Upload the asset succeed! ${uploadResult.data.id}. Took ${(Date.now() - uploadStart) / 1e3}s`);
   console.log(uploadResult.data);
 }
