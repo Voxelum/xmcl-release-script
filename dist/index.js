@@ -3156,12 +3156,12 @@ var require_lib2 = __commonJS({
       const dest = new URL$1(destination).hostname;
       return orig === dest || orig[orig.length - dest.length - 1] === "." && orig.endsWith(dest);
     };
-    function fetch2(url, opts) {
-      if (!fetch2.Promise) {
+    function fetch(url, opts) {
+      if (!fetch.Promise) {
         throw new Error("native promise missing, set fetch.Promise to your favorite alternative");
       }
-      Body.Promise = fetch2.Promise;
-      return new fetch2.Promise(function(resolve2, reject) {
+      Body.Promise = fetch.Promise;
+      return new fetch.Promise(function(resolve2, reject) {
         const request = new Request(url, opts);
         const options = getNodeRequestOptions(request);
         const send = (options.protocol === "https:" ? https : http).request;
@@ -3211,7 +3211,7 @@ var require_lib2 = __commonJS({
         req.on("response", function(res) {
           clearTimeout(reqTimeout);
           const headers = createHeadersLenient(res.headers);
-          if (fetch2.isRedirect(res.statusCode)) {
+          if (fetch.isRedirect(res.statusCode)) {
             const location = headers.get("Location");
             let locationURL = null;
             try {
@@ -3273,7 +3273,7 @@ var require_lib2 = __commonJS({
                   requestOpts.body = void 0;
                   requestOpts.headers.delete("content-length");
                 }
-                resolve2(fetch2(new Request(locationURL, requestOpts)));
+                resolve2(fetch(new Request(locationURL, requestOpts)));
                 finalize();
                 return;
             }
@@ -3333,11 +3333,11 @@ var require_lib2 = __commonJS({
         writeToStream(req, request);
       });
     }
-    fetch2.isRedirect = function(code) {
+    fetch.isRedirect = function(code) {
       return code === 301 || code === 302 || code === 303 || code === 307 || code === 308;
     };
-    fetch2.Promise = global.Promise;
-    module2.exports = exports = fetch2;
+    fetch.Promise = global.Promise;
+    module2.exports = exports = fetch;
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = exports;
     exports.Headers = Headers;
@@ -3520,8 +3520,8 @@ var require_dist_node5 = __commonJS({
       let headers = {};
       let status;
       let url;
-      const fetch2 = requestOptions.request && requestOptions.request.fetch || nodeFetch;
-      return fetch2(requestOptions.url, Object.assign({
+      const fetch = requestOptions.request && requestOptions.request.fetch || nodeFetch;
+      return fetch(requestOptions.url, Object.assign({
         method: requestOptions.method,
         body: requestOptions.body,
         headers: requestOptions.headers,
@@ -5129,36 +5129,31 @@ var require_dist_node12 = __commonJS({
 var import_rest = __toESM(require_dist_node12());
 var import_child_process = require("child_process");
 var import_fs = require("fs");
-var import_node_fetch = __toESM(require_lib2());
 var import_path = require("path");
-var import_stream = require("stream");
 async function main(releaseId, assetId) {
   console.log(`Release id: ${releaseId}. Asset id: ${assetId}`);
   const api = new import_rest.Octokit({
     auth: process.env.GITHUB_PAT
   });
-  const asset = await api.repos.getReleaseAsset({ owner: "voxelum", repo: "x-minecraft-launcher", asset_id: assetId });
-  console.log(asset.data);
+  const asset = await api.repos.getReleaseAsset({
+    owner: "voxelum",
+    repo: "x-minecraft-launcher",
+    asset_id: assetId
+  });
   const assetName = asset.data.name;
   const appxFilePath = (0, import_path.resolve)(assetName);
-  const url = asset.data.browser_download_url;
-  console.log(`Start to download the asset ${url}`);
+  console.log(`Start to download the asset ${assetName}`);
   const downloadStart = Date.now();
-  await new Promise((resolve2, reject) => {
-    (0, import_node_fetch.default)(url).then((res) => {
-      if (res.status !== 200) {
-        reject(`Status ${res.status}`);
-      } else {
-        (0, import_stream.pipeline)(res.body, (0, import_fs.createWriteStream)(appxFilePath), (e) => {
-          if (e)
-            reject(e);
-          else
-            resolve2();
-        });
-      }
-    }, reject);
+  const { data } = await api.repos.getReleaseAsset({
+    owner: "voxelum",
+    repo: "x-minecraft-launcher",
+    asset_id: assetId,
+    headers: {
+      "accept": "application/octet-stream"
+    }
   });
-  console.log(`Downloaded ${appxFilePath} (${(0, import_fs.statSync)(appxFilePath).size / 1024 / 1024}MB) asset. Took ${(Date.now() - downloadStart) / 1e3}s.`);
+  (0, import_fs.writeFileSync)(appxFilePath, Buffer.from(data));
+  console.log(`Downloaded ${appxFilePath} (${((0, import_fs.statSync)(appxFilePath).size / 1024 / 1024).toFixed(2)}MB) asset. Took ${(Date.now() - downloadStart) / 1e3}s.`);
   const windowsKitsPath = "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\";
   const dir = (0, import_fs.readdirSync)(windowsKitsPath).filter((f) => f.startsWith("10.0")).map((f) => (0, import_path.join)(windowsKitsPath, f)).filter((f) => (0, import_fs.statSync)(f).isDirectory()).sort().reverse()[0];
   const signToolPath = (0, import_path.join)(dir, "x64", "signtool.exe");

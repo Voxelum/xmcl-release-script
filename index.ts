@@ -1,9 +1,7 @@
 import { Octokit } from '@octokit/rest'
 import { spawnSync } from 'child_process'
-import { createWriteStream, readdirSync, readFileSync, statSync } from 'fs'
-import fetch from 'node-fetch'
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs'
 import { join, resolve } from 'path'
-import { pipeline } from 'stream'
 
 async function main(releaseId: number, assetId: number) {
     console.log(`Release id: ${releaseId}. Asset id: ${assetId}`)
@@ -13,29 +11,26 @@ async function main(releaseId: number, assetId: number) {
     })
 
     // get asset
-    const asset = await api.repos.getReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', asset_id: assetId })
-    console.log(asset.data)
+    const asset = await api.repos.getReleaseAsset({
+        owner: 'voxelum', repo: 'x-minecraft-launcher', asset_id: assetId
+    })
 
     const assetName = asset.data.name
     const appxFilePath = resolve(assetName)
-    const url = asset.data.browser_download_url
 
     // download file
-    console.log(`Start to download the asset ${url}`)
+    console.log(`Start to download the asset ${assetName}`)
+
     const downloadStart = Date.now()
-    await new Promise<void>((resolve, reject) => {
-        fetch(url).then(res => {
-            if (res.status !== 200) {
-                reject(`Status ${res.status}`)
-            } else {
-                pipeline(res.body, createWriteStream(appxFilePath), (e) => {
-                    if (e) reject(e)
-                    else resolve()
-                })
-            }
-        }, reject)
+
+    const { data } = await api.repos.getReleaseAsset({
+        owner: 'voxelum', repo: 'x-minecraft-launcher', asset_id: assetId, headers: {
+            'accept': 'application/octet-stream'
+        }
     })
-    console.log(`Downloaded ${appxFilePath} (${statSync(appxFilePath).size / 1024 / 1024}MB) asset. Took ${(Date.now() - downloadStart) / 1000}s.`)
+    writeFileSync(appxFilePath, Buffer.from(data as any))
+
+    console.log(`Downloaded ${appxFilePath} (${(statSync(appxFilePath).size / 1024 / 1024).toFixed(2)}MB) asset. Took ${(Date.now() - downloadStart) / 1000}s.`)
 
     // get the sign tool
     const windowsKitsPath = "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\"
@@ -70,11 +65,6 @@ async function main(releaseId: number, assetId: number) {
             console.log(line.toString())
         }
     }
-
-    // delete existed asset
-    // console.log(`Start to delete the old asset!`)
-    // await api.repos.deleteReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', asset_id: assetId })
-    // console.log(`Delete the asset ${assetId} success!`)
 
     const signedAppxContent = readFileSync(appxFilePath)
     // upload the new one
