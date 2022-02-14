@@ -14,24 +14,28 @@ async function main(releaseId: number, assetId: number) {
 
     // get asset
     const asset = await api.repos.getReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', asset_id: assetId })
-    console.log(asset)
+    console.log(asset.data)
 
     const assetName = asset.data.name
     const appxFilePath = resolve(assetName)
     const url = asset.data.browser_download_url
 
     // download file
-    console.log(`Start to download the asset`)
+    console.log(`Start to download the asset ${url}`)
     const downloadStart = Date.now()
     await new Promise<void>((resolve, reject) => {
         fetch(url).then(res => {
-            pipeline(res.body, createWriteStream(appxFilePath), (e) => {
-                if (e) reject(e)
-                else resolve()
-            })
+            if (res.status !== 200) {
+                reject(`Status ${res.status}`)
+            } else {
+                pipeline(res.body, createWriteStream(appxFilePath), (e) => {
+                    if (e) reject(e)
+                    else resolve()
+                })
+            }
         }, reject)
     })
-    console.log(`Downloaded asset. Took ${(Date.now() - downloadStart) / 1000}s.`)
+    console.log(`Downloaded ${appxFilePath} (${statSync(appxFilePath).size / 1024 / 1024}MB) asset. Took ${(Date.now() - downloadStart) / 1000}s.`)
 
     // get the sign tool
     const windowsKitsPath = "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\"
@@ -79,7 +83,7 @@ async function main(releaseId: number, assetId: number) {
     const uploadResult = await api.repos.uploadReleaseAsset({ owner: 'voxelum', repo: 'x-minecraft-launcher', release_id: releaseId, name: assetName, data: signedAppxContent as any })
     console.log(`Upload the asset succeed! ${uploadResult.data.id}. Took ${(Date.now() - uploadStart) / 1000}s`)
 
-    console.log(uploadResult)
+    console.log(uploadResult.data)
 }
 
 main(Number(process.argv[2]), Number(process.argv[3]))
