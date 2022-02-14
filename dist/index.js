@@ -5167,6 +5167,8 @@ async function main(releaseId, assetId) {
     "Open Source Developer, Hongze Xu",
     "/tr",
     "http://time.certum.pl",
+    "/td",
+    "SHA256",
     "/v",
     appxFilePath
   ];

@@ -50,6 +50,8 @@ async function main(releaseId: number, assetId: number) {
         'Open Source Developer, Hongze Xu',
         '/tr',
         'http://time.certum.pl',
+        '/td',
+        'SHA256',
         '/v',
         appxFilePath,
     ]
