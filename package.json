@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"bin": "./bin/index.js",
 	"scripts": {
-		"build": "esbuild --bundle --outdir=dist --format=cjs --platform=node --minify index.ts",
+		"build": "esbuild --bundle --outdir=dist --format=cjs --platform=node index.ts",
 		"start": "esno index.ts"
 	},
 	"devDependencies": {
