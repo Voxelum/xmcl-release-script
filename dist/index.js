@@ -5274,7 +5274,7 @@ var api = new import_rest.Octokit({
 var unpackExe = (zip, file, dir) => {
   console.log(`Unpack ${file} in ${zip} in ${dir}`);
   return new Promise((resolve2, reject) => {
-    (0, import_zip_min.cmd)(["e", zip, file, `-o${dir}`, "-ao"], (err) => {
+    (0, import_zip_min.cmd)(["e", zip, file, `-o${dir}`, "-aoa"], (err) => {
       console.log(err);
       if (err) {
         reject(err);
