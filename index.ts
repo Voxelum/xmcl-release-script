@@ -12,7 +12,8 @@ const api = new Octokit({
 const unpackExe = (zip: string, file: string, dir: string) => {
     console.log(`Unpack ${file} in ${zip} in ${dir}`)
     return new Promise<void>((resolve, reject) => {
-        cmd(['e', zip, file, `-o${dir}`], (err) => {
+        cmd(['e', zip, file, `-o${dir}`, '-ao'], (err) => {
+            console.log(err)
             if (err) { reject(err) } else { resolve() }
         })
     })
@@ -21,6 +22,7 @@ const updateExe = (zip: string, file: string) => {
     console.log(`Update ${file} to zip ${file}`)
     return new Promise<void>((resolve, reject) => {
         cmd(['u', zip, file], (err) => {
+            console.log(err)
             if (err) { reject(err) } else { resolve() }
         })
     })
