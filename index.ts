@@ -97,12 +97,12 @@ async function main(releaseId: number, assetId: number) {
 
         const signedAppxContent = await readFile(appxFilePath)
         // upload the new one
-        await upload(assetName.replace('-unsigned', '').replace('-x64', ''), signedAppxContent)
+        await upload(assetName.replace('-unsigned', ''), signedAppxContent)
     }
 
     const processZip64 = async () => {
         const assets = release.data.assets
-        const x64Zip = assets.find(a => a.name.endsWith('win32-x64.zip'))
+        const x64Zip = assets.find(a => a.name.endsWith('win32-x64-unsigned.zip'))
         const zipPath = resolve(x64Zip.name)
         const exePath = resolve('./x64/xmcl.exe')
 
@@ -117,14 +117,13 @@ async function main(releaseId: number, assetId: number) {
 
         if (x64Zip) {
             await updateExe(zipPath, exePath)
-            await deleteAsset(x64Zip.id)
-            await upload(x64Zip.name, await readFile(zipPath))
+            await upload(x64Zip.name.replace('-unsigned', ''), await readFile(zipPath))
         }
 
     }
     const processZip32 = async () => {
         const assets = release.data.assets
-        const x32Zip = assets.find(a => a.name.endsWith('win32-ia32.zip'))
+        const x32Zip = assets.find(a => a.name.endsWith('win32-ia32-unsigned.zip'))
         const zipPath = resolve(x32Zip.name)
         const exePath = resolve('./x32/xmcl.exe')
 
@@ -140,8 +139,7 @@ async function main(releaseId: number, assetId: number) {
 
         if (x32Zip) {
             await updateExe(zipPath, exePath)
-            await deleteAsset(x32Zip.id)
-            await upload(x32Zip.name, await readFile(zipPath))
+            await upload(x32Zip.name.replace('-unsigned', ''), await readFile(zipPath))
         }
     }
 
