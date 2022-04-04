@@ -5131,6 +5131,7 @@ var import_child_process = require("child_process");
 var import_fs = require("fs");
 var import_path = require("path");
 async function main(releaseId, assetId) {
+  releaseId = 59469527;
   console.log(`Release id: ${releaseId}. Asset id: ${assetId}`);
   const api = new import_rest.Octokit({
     auth: process.env.GITHUB_PAT
