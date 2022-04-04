@@ -1,6 +1,6 @@
 {
 	"name": "xmcl-release-script",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"bin": "./bin/index.js",
 	"scripts": {
 		"build": "esbuild --bundle --outdir=dist --format=cjs --platform=node index.ts",
