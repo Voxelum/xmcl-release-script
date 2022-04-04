@@ -5295,9 +5295,8 @@ var updateExe = (zip, file) => {
     });
   });
 };
-async function main(releaseId, assetId) {
-  releaseId = 61085595;
-  console.log(`Release id: ${releaseId}. Asset id: ${assetId}`);
+async function main(releaseId) {
+  console.log(`Release id: ${releaseId}.`);
   const toSigned = [];
   let signDone = () => {
   };
@@ -5357,11 +5356,11 @@ async function main(releaseId, assetId) {
     });
     await signPromise;
     const signedAppxContent = await (0, import_promises.readFile)(appxFilePath);
-    await upload(assetName.replace("-unsigned", "").replace("-x64", ""), signedAppxContent);
+    await upload(assetName.replace("-unsigned", ""), signedAppxContent);
   };
   const processZip64 = async () => {
     const assets = release.data.assets;
-    const x64Zip = assets.find((a) => a.name.endsWith("win32-x64.zip"));
+    const x64Zip = assets.find((a) => a.name.endsWith("win32-x64-unsigned.zip"));
     const zipPath = (0, import_path.resolve)(x64Zip.name);
     const exePath = (0, import_path.resolve)("./x64/xmcl.exe");
     await semaphore(async () => {
@@ -5374,13 +5373,12 @@ async function main(releaseId, assetId) {
     await signPromise;
     if (x64Zip) {
       await updateExe(zipPath, exePath);
-      await deleteAsset(x64Zip.id);
-      await upload(x64Zip.name, await (0, import_promises.readFile)(zipPath));
+      await upload(x64Zip.name.replace("-unsigned", ""), await (0, import_promises.readFile)(zipPath));
     }
   };
   const processZip32 = async () => {
     const assets = release.data.assets;
-    const x32Zip = assets.find((a) => a.name.endsWith("win32-ia32.zip"));
+    const x32Zip = assets.find((a) => a.name.endsWith("win32-ia32-unsigned.zip"));
     const zipPath = (0, import_path.resolve)(x32Zip.name);
     const exePath = (0, import_path.resolve)("./x32/xmcl.exe");
     await semaphore(async () => {
@@ -5393,8 +5391,7 @@ async function main(releaseId, assetId) {
     await signPromise;
     if (x32Zip) {
       await updateExe(zipPath, exePath);
-      await deleteAsset(x32Zip.id);
-      await upload(x32Zip.name, await (0, import_promises.readFile)(zipPath));
+      await upload(x32Zip.name.replace("-unsigned", ""), await (0, import_promises.readFile)(zipPath));
     }
   };
   const tasks = Promise.all([processAppX(), processZip32(), processZip64()]);
@@ -5426,7 +5423,7 @@ async function main(releaseId, assetId) {
   signDone();
   await tasks;
 }
-main(Number(process.argv[2]), Number(process.argv[3]));
+main(Number(process.argv[2]));
 /*!
  * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
  *

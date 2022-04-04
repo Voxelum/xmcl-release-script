@@ -26,12 +26,8 @@ const updateExe = (zip: string, file: string) => {
     })
 }
 
-async function main(releaseId: number, assetId: number) {
-    releaseId = 61085595
-    console.log(`Release id: ${releaseId}. Asset id: ${assetId}`)
-
-    // await api.repos.updateRelease({ owner: 'voxelum', repo: 'x-minecraft-launcher', release_id: releaseId, draft: true })
-    // return
+async function main(releaseId: number) {
+    console.log(`Release id: ${releaseId}.`)
 
     const toSigned = [] as string[]
     let signDone = () => { }
@@ -186,4 +182,4 @@ async function main(releaseId: number, assetId: number) {
     await tasks
 }
 
-main(Number(process.argv[2]), Number(process.argv[3]))
+main(Number(process.argv[2]))
