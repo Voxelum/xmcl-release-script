@@ -20,6 +20,142 @@ var __toESM = (module2, isNodeMode) => {
   return __reExport(__markAsModule(__defProp(module2 != null ? __create(__getProtoOf(module2)) : {}, "default", !isNodeMode && module2 && module2.__esModule ? { get: () => module2.default, enumerable: true } : { value: module2, enumerable: true })), module2);
 };
 
+// node_modules/.pnpm/7zip-bin@5.1.1/node_modules/7zip-bin/index.js
+var require_zip_bin = __commonJS({
+  "node_modules/.pnpm/7zip-bin@5.1.1/node_modules/7zip-bin/index.js"(exports) {
+    "use strict";
+    var path = require("path");
+    function getPath() {
+      if (process.env.USE_SYSTEM_7ZA === "true") {
+        return "7za";
+      }
+      if (process.platform === "darwin") {
+        return path.join(__dirname, "mac", process.arch, "7za");
+      } else if (process.platform === "win32") {
+        return path.join(__dirname, "win", process.arch, "7za.exe");
+      } else {
+        return path.join(__dirname, "linux", process.arch, "7za");
+      }
+    }
+    exports.path7za = getPath();
+    exports.path7x = path.join(__dirname, "7x.sh");
+  }
+});
+
+// node_modules/.pnpm/7zip-min@1.4.2/node_modules/7zip-min/index.js
+var require_zip_min = __commonJS({
+  "node_modules/.pnpm/7zip-min@1.4.2/node_modules/7zip-min/index.js"(exports) {
+    "use strict";
+    var spawn = require("child_process").spawn;
+    var path7za = require_zip_bin().path7za;
+    function unpack(pathToPack, destPathOrCb, cb) {
+      if (typeof destPathOrCb === "function" && cb === void 0) {
+        cb = destPathOrCb;
+        run(path7za, ["x", pathToPack, "-y"], cb);
+      } else {
+        run(path7za, ["x", pathToPack, "-y", "-o" + destPathOrCb], cb);
+      }
+    }
+    function pack(pathToSrc, pathToDest, cb) {
+      run(path7za, ["a", pathToDest, pathToSrc], cb);
+    }
+    function list(pathToSrc, cb) {
+      run(path7za, ["l", "-slt", "-ba", pathToSrc], cb);
+    }
+    function cmd2(paramsArr, cb) {
+      run(path7za, paramsArr, cb);
+    }
+    function run(bin, args, cb) {
+      cb = onceify(cb);
+      const runError = new Error();
+      const proc = spawn(bin, args, { windowsHide: true });
+      let output = "";
+      proc.on("error", function(err) {
+        cb(err);
+      });
+      proc.on("exit", function(code) {
+        let result = null;
+        if (args[0] === "l") {
+          result = parseListOutput(output);
+        }
+        if (code) {
+          runError.message = `7-zip exited with code ${code}
+${output}`;
+        }
+        cb(code ? runError : null, result);
+      });
+      proc.stdout.on("data", (chunk) => {
+        output += chunk.toString();
+      });
+      proc.stderr.on("data", (chunk) => {
+        output += chunk.toString();
+      });
+    }
+    function onceify(fn) {
+      let called = false;
+      return function() {
+        if (called)
+          return;
+        called = true;
+        fn.apply(this, Array.prototype.slice.call(arguments));
+      };
+    }
+    function parseListOutput(str) {
+      if (!str.length)
+        return [];
+      str = str.replace(/(\r\n|\n|\r)/gm, "\n");
+      const items = str.split(/^\s*$/m);
+      const res = [];
+      const LIST_MAP = {
+        "Path": "name",
+        "Size": "size",
+        "Packed Size": "compressed",
+        "Attributes": "attr",
+        "Modified": "dateTime",
+        "CRC": "crc",
+        "Method": "method",
+        "Block": "block",
+        "Encrypted": "encrypted"
+      };
+      if (!items.length)
+        return [];
+      for (let item of items) {
+        if (!item.length)
+          continue;
+        const obj = {};
+        const lines = item.split("\n");
+        if (!lines.length)
+          continue;
+        for (let line of lines) {
+          const data = line.split(" = ");
+          if (data.length !== 2)
+            continue;
+          const name = data[0].trim();
+          const val = data[1].trim();
+          if (LIST_MAP[name]) {
+            if (LIST_MAP[name] === "dateTime") {
+              const dtArr = val.split(" ");
+              if (dtArr.length !== 2)
+                continue;
+              obj["date"] = dtArr[0];
+              obj["time"] = dtArr[1];
+            } else {
+              obj[LIST_MAP[name]] = val;
+            }
+          }
+        }
+        if (Object.keys(obj).length)
+          res.push(obj);
+      }
+      return res;
+    }
+    exports.unpack = unpack;
+    exports.pack = pack;
+    exports.list = list;
+    exports.cmd = cmd2;
+  }
+});
+
 // node_modules/.pnpm/universal-user-agent@6.0.0/node_modules/universal-user-agent/dist-node/index.js
 var require_dist_node = __commonJS({
   "node_modules/.pnpm/universal-user-agent@6.0.0/node_modules/universal-user-agent/dist-node/index.js"(exports) {
@@ -5090,16 +5226,16 @@ var require_dist_node11 = __commonJS({
       return Object.assign(withDecorations, requestWithDefaults);
     }
     function restEndpointMethods(octokit) {
-      const api = endpointsToMethods(octokit, Endpoints);
+      const api2 = endpointsToMethods(octokit, Endpoints);
       return {
-        rest: api
+        rest: api2
       };
     }
     restEndpointMethods.VERSION = VERSION;
     function legacyRestEndpointMethods(octokit) {
-      const api = endpointsToMethods(octokit, Endpoints);
-      return _objectSpread2(_objectSpread2({}, api), {}, {
-        rest: api
+      const api2 = endpointsToMethods(octokit, Endpoints);
+      return _objectSpread2(_objectSpread2({}, api2), {}, {
+        rest: api2
       });
     }
     legacyRestEndpointMethods.VERSION = VERSION;
@@ -5126,35 +5262,143 @@ var require_dist_node12 = __commonJS({
 });
 
 // index.ts
+var import_zip_min = __toESM(require_zip_min());
 var import_rest = __toESM(require_dist_node12());
 var import_child_process = require("child_process");
 var import_fs = require("fs");
+var import_promises = require("fs/promises");
 var import_path = require("path");
+var api = new import_rest.Octokit({
+  auth: process.env.GITHUB_PAT
+});
+var unpackExe = (zip, file, dir) => {
+  console.log(`Unpack ${file} in ${zip} in ${dir}`);
+  return new Promise((resolve2, reject) => {
+    (0, import_zip_min.cmd)(["e", zip, file, `-o${dir}`], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve2();
+      }
+    });
+  });
+};
+var updateExe = (zip, file) => {
+  console.log(`Update ${file} to zip ${file}`);
+  return new Promise((resolve2, reject) => {
+    (0, import_zip_min.cmd)(["u", zip, file], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve2();
+      }
+    });
+  });
+};
 async function main(releaseId, assetId) {
-  releaseId = 59469527;
+  releaseId = 61085595;
   console.log(`Release id: ${releaseId}. Asset id: ${assetId}`);
-  const api = new import_rest.Octokit({
-    auth: process.env.GITHUB_PAT
+  const toSigned = [];
+  let signDone = () => {
+  };
+  let startSign = () => {
+  };
+  const signPromise = new Promise((resolve2) => {
+    signDone = resolve2;
   });
-  const asset = await api.repos.getReleaseAsset({
-    owner: "voxelum",
-    repo: "x-minecraft-launcher",
-    asset_id: assetId
+  const startSignPromise = new Promise((resolve2) => {
+    startSign = resolve2;
   });
-  const assetName = asset.data.name;
-  const appxFilePath = (0, import_path.resolve)(assetName);
-  console.log(`Start to download the asset ${assetName}`);
-  const downloadStart = Date.now();
-  const { data } = await api.repos.getReleaseAsset({
-    owner: "voxelum",
-    repo: "x-minecraft-launcher",
-    asset_id: assetId,
-    headers: {
-      "accept": "application/octet-stream"
+  let startSignSemaphore = 0;
+  async function semaphore(func) {
+    startSignSemaphore += 1;
+    try {
+      await func();
+    } finally {
+      startSignSemaphore -= 1;
+      console.log(`Remain semaphore ${startSignSemaphore}.`);
+      if (startSignSemaphore === 0) {
+        startSign();
+      }
     }
-  });
-  (0, import_fs.writeFileSync)(appxFilePath, Buffer.from(data));
-  console.log(`Downloaded ${appxFilePath} (${((0, import_fs.statSync)(appxFilePath).size / 1024 / 1024).toFixed(2)}MB) asset. Took ${(Date.now() - downloadStart) / 1e3}s.`);
+  }
+  const download = async (id, filePath) => {
+    console.log(`Start to download the asset ${filePath}`);
+    const downloadStart = Date.now();
+    const { data } = await api.repos.getReleaseAsset({
+      owner: "voxelum",
+      repo: "x-minecraft-launcher",
+      asset_id: id,
+      headers: {
+        "accept": "application/octet-stream"
+      }
+    });
+    await (0, import_promises.writeFile)(filePath, Buffer.from(data));
+    console.log(`Downloaded ${filePath} (${((0, import_fs.statSync)(filePath).size / 1024 / 1024).toFixed(2)}MB) asset. Took ${(Date.now() - downloadStart) / 1e3}s.`);
+  };
+  const upload = async (name, content) => {
+    console.log(`Start to upload the signed asset!`);
+    const uploadStart = Date.now();
+    const uploadResult = await api.repos.uploadReleaseAsset({ owner: "voxelum", repo: "x-minecraft-launcher", release_id: releaseId, name, data: content });
+    console.log(`Upload the asset ${uploadResult.status}! ${uploadResult.data.id}. Took ${(Date.now() - uploadStart) / 1e3}s`);
+  };
+  const deleteAsset = async (id) => {
+    const uploadResult = await api.repos.deleteReleaseAsset({ owner: "voxelum", repo: "x-minecraft-launcher", release_id: releaseId, asset_id: id });
+    console.log(`Delete asset ${id}: ${uploadResult.status}`);
+  };
+  const release = await api.repos.getRelease({ owner: "voxelum", repo: "x-minecraft-launcher", release_id: releaseId });
+  const processAppX = async () => {
+    const asset = release.data.assets.find((a) => a.name.endsWith("-unsigned.appx"));
+    const assetName = asset.name;
+    const appxFilePath = (0, import_path.resolve)(assetName);
+    await semaphore(async () => {
+      await download(asset.id, appxFilePath);
+      toSigned.push(appxFilePath);
+    });
+    await signPromise;
+    const signedAppxContent = await (0, import_promises.readFile)(appxFilePath);
+    await upload(assetName.replace("-unsigned", "").replace("-x64", ""), signedAppxContent);
+  };
+  const processZip64 = async () => {
+    const assets = release.data.assets;
+    const x64Zip = assets.find((a) => a.name.endsWith("win32-x64.zip"));
+    const zipPath = (0, import_path.resolve)(x64Zip.name);
+    const exePath = (0, import_path.resolve)("./x64/xmcl.exe");
+    await semaphore(async () => {
+      if (x64Zip) {
+        await download(x64Zip.id, zipPath);
+        await unpackExe(zipPath, "xmcl.exe", "x64");
+        toSigned.push(exePath);
+      }
+    });
+    await signPromise;
+    if (x64Zip) {
+      await updateExe(zipPath, exePath);
+      await deleteAsset(x64Zip.id);
+      await upload(x64Zip.name, await (0, import_promises.readFile)(zipPath));
+    }
+  };
+  const processZip32 = async () => {
+    const assets = release.data.assets;
+    const x32Zip = assets.find((a) => a.name.endsWith("win32-ia32.zip"));
+    const zipPath = (0, import_path.resolve)(x32Zip.name);
+    const exePath = (0, import_path.resolve)("./x32/xmcl.exe");
+    await semaphore(async () => {
+      if (x32Zip) {
+        await download(x32Zip.id, zipPath);
+        await unpackExe(zipPath, "xmcl.exe", "x32");
+        toSigned.push(exePath);
+      }
+    });
+    await signPromise;
+    if (x32Zip) {
+      await updateExe(zipPath, exePath);
+      await deleteAsset(x32Zip.id);
+      await upload(x32Zip.name, await (0, import_promises.readFile)(zipPath));
+    }
+  };
+  const tasks = Promise.all([processAppX(), processZip32(), processZip64()]);
+  await startSignPromise;
   const windowsKitsPath = "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\";
   const dir = (0, import_fs.readdirSync)(windowsKitsPath).filter((f) => f.startsWith("10.0")).map((f) => (0, import_path.join)(windowsKitsPath, f)).filter((f) => (0, import_fs.statSync)(f).isDirectory()).sort().reverse()[0];
   const signToolPath = (0, import_path.join)(dir, "x64", "signtool.exe");
@@ -5171,22 +5415,16 @@ async function main(releaseId, assetId) {
     "/td",
     "SHA256",
     "/v",
-    appxFilePath
+    ...toSigned
   ];
   console.log(`Sign with command: "${signToolPath}" ${args.join(" ")}`);
   const result = (0, import_child_process.spawnSync)(signToolPath, args);
   console.log();
-  for (const line of result.output) {
-    if (line) {
-      console.log(line.toString());
-    }
+  for (const line of result.output.filter((l) => !!l)) {
+    console.log(line.toString());
   }
-  const signedAppxContent = (0, import_fs.readFileSync)(appxFilePath);
-  console.log(`Start to upload the signed asset!`);
-  const uploadStart = Date.now();
-  const uploadResult = await api.repos.uploadReleaseAsset({ owner: "voxelum", repo: "x-minecraft-launcher", release_id: releaseId, name: assetName.replace("-unsigned", "").replace("-x64", ""), data: signedAppxContent });
-  console.log(`Upload the asset succeed! ${uploadResult.data.id}. Took ${(Date.now() - uploadStart) / 1e3}s`);
-  console.log(uploadResult.data);
+  signDone();
+  await tasks;
 }
 main(Number(process.argv[2]), Number(process.argv[3]));
 /*!
