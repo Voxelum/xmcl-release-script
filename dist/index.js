@@ -5364,11 +5364,11 @@ async function main(releaseId) {
     const assets = release.data.assets;
     const x64Zip = assets.find((a) => a.name.endsWith("win32-x64-unsigned.zip"));
     const zipPath = (0, import_path.resolve)(x64Zip.name);
-    const exePath = (0, import_path.resolve)("./x64/xmcl.exe");
+    const exePath = (0, import_path.resolve)("./x64/X Minecraft Launcher.exe");
     await semaphore(async () => {
       if (x64Zip) {
         await download(x64Zip.id, zipPath);
-        await unpackExe(zipPath, "xmcl.exe", "x64");
+        await unpackExe(zipPath, "X Minecraft Launcher.exe", "x64");
         toSigned.push(exePath);
       }
     });
@@ -5382,11 +5382,11 @@ async function main(releaseId) {
     const assets = release.data.assets;
     const x32Zip = assets.find((a) => a.name.endsWith("win32-ia32-unsigned.zip"));
     const zipPath = (0, import_path.resolve)(x32Zip.name);
-    const exePath = (0, import_path.resolve)("./x32/xmcl.exe");
+    const exePath = (0, import_path.resolve)("./x32/X Minecraft Launcher.exe");
     await semaphore(async () => {
       if (x32Zip) {
         await download(x32Zip.id, zipPath);
-        await unpackExe(zipPath, "xmcl.exe", "x32");
+        await unpackExe(zipPath, "X Minecraft Launcher.exe", "x32");
         toSigned.push(exePath);
       }
     });
